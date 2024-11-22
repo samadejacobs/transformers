@@ -20,8 +20,8 @@ from typing import Optional, Tuple
 import torch
 import torch.nn.functional as F
 
+from transformers.integrations.deepspeed import wrap_deepspeed
 from .utils import is_flash_attn_2_available, is_flash_attn_greater_or_equal
-
 
 if is_flash_attn_2_available():
     from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input  # noqa
@@ -180,6 +180,7 @@ def prepare_fa2_from_position_ids(query, key, value, position_ids):
     return (query, key, value, indices_q, (cu_seq_lens, cu_seq_lens), (max_length, max_length))
 
 
+@wrap_deepspeed
 def _flash_attention_forward(
     query_states: torch.Tensor,
     key_states: torch.Tensor,
